@@ -3,24 +3,35 @@ package com.github.paniclab.argorithms.search.linear;
 import com.github.paniclab.argorithms.search.SearchStrategy;
 
 import java.util.Collection;
-import java.util.function.BiFunction;
+import java.util.Comparator;
+import java.util.function.IntPredicate;
+
 
 public class LinearSearchStrategy<E, C extends Collection<E>> implements SearchStrategy<E, C> {
-    private BiFunction<E, E[], Integer> searchFunction = this::applyFunction;
-
     @Override
     public int search(E element, E[] array) {
-        return searchFunction.apply(element, array);
+        IntPredicate comparePredicate = null;
+        if(Comparable.class.isAssignableFrom(element.getClass())) {
+            comparePredicate = index -> {
+                Comparable<E> e = (Comparable<E>) element;
+
+                return e.compareTo(array[index]) == 0;
+            };
+        } else {
+            comparePredicate = index -> array[index].equals(element);
+        }
+        return search(element, array, comparePredicate);
     }
 
 
-    private int applyFunction(E element, E[] array) {
+
+    private int search(E element, E[] array, IntPredicate compare) {
         int lastIndex = array.length - 1;
         E lastElement = array[lastIndex];
 
         array[lastIndex] = element;
         int index = 0;
-        while (!array[index].equals(element)) {
+        while (compare.negate().test(index)) {
             index++;
         }
 
@@ -31,5 +42,12 @@ public class LinearSearchStrategy<E, C extends Collection<E>> implements SearchS
             return lastIndex;
         }
         return -1;
+    }
+
+    @Override
+    public int search(E element, C collection, Comparator<? super E> comparator) {
+        E[] array = (E[]) collection.toArray();
+        IntPredicate comparePredicate = index -> comparator.compare(array[index], element) == 0;
+        return search(element, array, comparePredicate);
     }
 }
