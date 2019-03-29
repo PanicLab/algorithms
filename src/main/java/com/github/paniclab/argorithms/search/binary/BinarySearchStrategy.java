@@ -2,7 +2,7 @@ package com.github.paniclab.argorithms.search.binary;
 
 import com.github.paniclab.argorithms.search.SearchStrategy;
 
-import javax.naming.OperationNotSupportedException;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -10,6 +10,11 @@ import java.util.Comparator;
 public class BinarySearchStrategy<E> implements SearchStrategy<E> {
     @Override
     public int search(E element, E[] array) {
+        if(Comparable.class.isAssignableFrom(element.getClass())) {
+            Comparator comparator = Comparator.naturalOrder();
+            return search(element, array, comparator);
+        }
+
         throw new RuntimeException("Operation is not supported");
     }
 
@@ -28,14 +33,14 @@ public class BinarySearchStrategy<E> implements SearchStrategy<E> {
         }
 
         if(comparator.compare(middleElement, element) < 0) {
-            rightLimit = middle - 1;
-            E[] newArray = (E[]) Arrays.asList(array).subList(leftLimit, rightLimit).toArray();
+            leftLimit = middle + 1;
+            E[] newArray = (E[]) Arrays.asList(array).subList(leftLimit, rightLimit + 1).toArray();
             return search(element, newArray, comparator);
         }
 
         if(comparator.compare(middleElement, element) > 0) {
-            leftLimit = middle + 1;
-            E[] newArray = (E[]) Arrays.asList(array).subList(leftLimit, rightLimit).toArray();
+            rightLimit = middle - 1;
+            E[] newArray = (E[]) Arrays.asList(array).subList(leftLimit, rightLimit + 1).toArray();
             return search(element, newArray, comparator);
         }
 
