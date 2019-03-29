@@ -19,9 +19,11 @@ public class LinearSearchStrategy<E> implements SearchStrategy<E> {
         }
 
         if(index < lastIndex) {
+            array[lastIndex] = lastElement;
             return index;
         }
         if(lastElement.equals(element)) {
+            array[lastIndex] = lastElement;
             return lastIndex;
         }
 
