@@ -11,7 +11,9 @@ public class BinarySearchStrategy<E> implements SearchStrategy<E> {
     @Override
     public int search(E element, E[] array) {
         if(Comparable.class.isAssignableFrom(element.getClass())) {
-            Comparator comparator = Comparator.naturalOrder();
+            //Comparator comparator = Comparator.naturalOrder();
+            Comparable<E> e = Comparable.class.cast(element);
+            Comparator<E> comparator = Comparator.comparing(e::compareTo);
             return search(element, array, comparator);
         }
 
